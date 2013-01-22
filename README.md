@@ -1,22 +1,46 @@
-### Requirements
+# AT&T API Reporter
+Polls AT&T API, gathers the results and displays on a dashboard.
 
-    gem install mechanize sinatra oauth2 curb logger haml json
+## Installation
 
-### Run
+### requires ruby
+[http://www.ruby-lang.org/en/downloads/](http://www.ruby-lang.org/en/downloads/)
 
-    ruby test.rb [auth_token]
+### requires SQLite
+See below various ways to install it.
 
-This will start a sinatra app to handle the authorization callbacks and 
-initiate a mechanize script to automate logging in and authorization. If auth_token is
-specified, the script use that instead of trying to obtain one.
+    # Debian / Ubuntu
+    sudo apt-get install libsqlite3-dev
 
-The sinatra app is not yet used for interacting directly with the APIs - it's main purpose 
-is to provide an endpoint for the openID authorization callback and to allow exercising
-of other parts of the API that require an HTTP endpoint.
+    # RedHat / Fedora
+    sudo yum install sqlite-devel
 
-Once an access token has been obtained, API calls can be invoked.
-APIs are called automatically inside a sinatra request. Once a response has 
-been received, a redirect action passes control to the next action to be tested.
+    # MacPorts
+    sudo port install sqlite3
 
-Sign up at http://devconnect-beta-api.att.com/
-Ask Christopher Bartsch (CB1118@att.com) / Kham Bui (KB6014@att.com) to add your merchant’s account to the BF role.
+    # HomeBrew
+    sudo brew install sqlite
+    
+On SQLite everything is saved in a small lightweight file. If you want to browse this file there's an utility software that works great: [http://sourceforge.net/projects/sqlitebrowser/](http://sourceforge.net/projects/sqlitebrowser/)
+
+### requires gem bundler
+ 
+    $ gem install bundler
+    
+### installing other gems
+ 
+    $ bundle install
+
+## Running
+
+There's 2 main components: the webapp and the poller script. In a terminal window execute the command below to start the webapp.
+
+    ruby web_app.rb
+
+You can hit the index on [http://127.0.0.1:5985/index.html](http://127.0.0.1:5985/index.html). 
+
+In another terminal window, start the poller. It will execute and sleep for 1 hour before next execution.
+
+    ruby test_runner.rb
+    
+The poller will execute, gather the results, and save everything on a local SQLite database file.    
