@@ -1,0 +1,95 @@
+{
+    "apiKey"          : "2f9dc3d895ecdd2eb746e4a8f1ac2e05",
+    "secretKey"       : "e19fe3273cd64d6b",
+    "shortCode"       : "44627015",
+    "apiHost"         : "https://api.att.com",
+    "localServer"     : "http://127.0.0.1",
+    "port"            : "5985",
+    "userID"          : "jaisonw@isoftstone.com",
+    "password"        : "welcome1",
+    "tel"             : "4259193428",
+    /*"tel"             : "6504211718",*/
+    /*"oauth_token"     : "54c7e06686dfb87f640726d414a73c48",*/
+    
+    "apis": [
+    
+        {
+            "id"        : "oauth",
+            "name"      : "OAuth",
+            "methods"   : [{
+                "id"    : "authorize",
+                "name"  : "Get End User Authorization"
+            },{
+                "id"    : "token",
+                "name"  : "Get Access Token"
+            }]
+        },
+        
+        {
+            "id"        : "mms",
+            "name"      : "MMS",
+            "methods"   : [{
+                "id"    : "messaging_outbox",
+                "name"  : "Send MMS"
+            }]
+        },
+
+        {
+            "id"        : "notary",
+            "name"      : "Notary",
+            "methods"   : [{
+                "id"        : "signed_payload",
+                "name"      : "Signed Payload"
+            }]
+        },
+        
+        {
+            "id"        : "payment",
+            "name"      : "Payment",
+            "methods"   : [{
+                "id"        : "new_transaction_consent",
+                "name"      : "New Transaction (Before Consent)"
+            },{
+                "id"        : "new_subscription_consent",
+                "name"      : "New Subscription (Before Consent)"
+            }]
+        },
+        
+        {
+            "id"        : "location",
+            "name"      : "Location",
+            "methods"   : [{
+                "id"        : "get_device_location",
+                "name"      : "Get Device Location",
+                "url"       : "https://api.att.com/2/devices/location",
+                "verb"      : "GET",
+                "headers"   : {
+                    "Accept"            : "application/json",
+                    "Authorization"     : "{auth_token}",
+                    "Content-Type"      : "application/json"
+                }
+            }]
+        },
+        
+        {
+            "id"        : "sms",
+            "name"      : "SMS",
+            "methods"   : [{
+                "id"            : "messaging_outbox",
+                "name"          : "Send SMS",
+                "url"           : "https://api.att.com/rest/sms/2/messaging/outbox",
+    	        "verb"          : "POST",
+                "headers"       : {
+                    "Accept"            : "application/json",
+                    "Authorization"     : "{auth_token}",
+                    "Content-Type"      : "application/json"
+                },
+                "data"          : {
+                    "Address"   : "tel:{telephone}",
+                    "Message"   : "Test ATT API"
+                }
+            }]
+        }
+        
+    ]
+}

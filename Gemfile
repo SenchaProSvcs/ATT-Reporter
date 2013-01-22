@@ -1,0 +1,12 @@
+source "http://rubygems.org"
+
+gem "sinatra"
+gem "active_support"
+gem "mechanize" 
+gem "oauth2"
+gem "curb"
+gem "logger"
+gem "haml"
+gem "json"
+gem "data_mapper"
+gem "dm-sqlite-adapter"
