@@ -2,3 +2,5 @@
 .sass-cache
 logs/
 results/
+nohup.out
+data/database.db

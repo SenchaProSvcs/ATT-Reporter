@@ -1,75 +1,174 @@
-Ext.define('AttApi.view.Viewport', {
+Ext.define('Reporter.view.Viewport', {
+    renderTo: Ext.getBody(),
     extend: 'Ext.container.Viewport',
-
     requires: [
-        'AttApi.view.status.Grid',
-        'AttApi.view.summary.SummaryPanel',
+        'Ext.grid.column.Date',
+        'Ext.grid.feature.Grouping',
+        'Ext.grid.Panel',
         'Ext.layout.container.Border'
     ],
-
-    layout  : 'border',
-    padding : 5,
-
-    items: [
-        /*{
-            region      : 'north',
-            height      : 35,
-            padding     : '0 0 5 0',
-            bodyStyle   : 'padding: 5px;',
-            html        : "Sencha's AT&T API Status"
-              
-        },*/
-        {
-            region      : 'center',
-            itemId      : 'viewer',
-            //title       : "Sencha's AT&T API Status",
-            xtype       : 'tabpanel',
-            plain       : true,
-            activeTab   : 0,
-            items       : [
-                {
-                    title   : 'Summary',
-                    xtype   : 'summary-panel'
-                },
-                {
-                    title   : 'Oauth Latency Chart',
-                    xtype   : 'oauth-chartpanel'
+    
+    cls: 'r-viewport',
+    layout: 'border',
+    items: [{
+        xtype: 'container',
+        region: 'north',
+        cls: 'logo',
+        height: 90,
+        weight: 200,
+        margins: '0 0 40 0'
+    },{
+        xtype: 'gridpanel',
+        itemId: 'last-results-grid',
+        region: 'west',
+        weight: 200,
+        width: 500,
+        margins: '0 10 20 20',
+        store: 'LastTestResults',
+        features: [{
+            ftype:'grouping',
+             groupHeaderTpl: '{name}',
+             enableGroupingMenu: false,
+             collapsible: false
+        }],
+        dockedItems: [{
+            xtype: 'component',
+            dock: 'top',
+            cls: 'api-status-header',
+            itemId: 'api-status-header',
+            tpl: '<h2>APIs Status</h2><span>Last Update: {lastUpdate:date("n/j/Y H:iA")}</span>',
+            height: 60,
+            data: {
+                lastUpdate: null
+            }
+        }],
+        columns: [{
+            text: 'Method',
+            dataIndex: 'name',
+            flex: 1
+        },{
+            xtype: 'datecolumn',
+            text: 'Start',
+            dataIndex: 'created_date',
+            align: 'center',
+            format: 'H:i:s.u',
+            width: 90
+        },{
+            xtype: 'datecolumn',
+            text: 'Finish',
+            dataIndex: 'finished_date',
+            align: 'center',
+            format: 'H:i:s.u',
+            width: 90
+        },{
+            text: 'Duration',
+            dataIndex: 'duration',
+            align: 'center',
+            width: 70,
+            renderer: function(v) {
+                return v + 's';
+            }
+        },{
+            text: 'Result',
+            dataIndex: 'result',
+            align: 'center',
+            width: 70,
+            renderer: function(v, meta) {
+                switch(v) {
+                    case Reporter.model.TestResult.PASSED:
+                        meta.style = "color: #62B851; font-weight: bold;";
+                        return 'Passed';
+                        
+                    case Reporter.model.TestResult.WARNING:
+                        meta.style = "color: #D6CF21; font-weight: bold;";
+                        return 'Warning';
                 }
-            ]
-        },
-        {
-            region      : 'west',
-            split       : true,
-            frame       : true,
-            //title     : "Complete API Tests",
-            title       : "Sencha's AT&T API Status",
-            width       : 300,
-            collapsible : true,
-            border      : false,
-            layout      : {
-                type    : 'vbox',
-                align   : 'stretch'
-            },
-            items       : [
-                {
-                    xtype   : 'status-grid',
-                    //border  : false,
-                    flex    : 1
-                },
-                {
-                    itemId   : 'lastrun',
-                    html     : '',
-                    frame    : true,
-                    bodyStyle : 'padding : 5px;',
-                    height   : 30
+                
+                meta.style = "color: #DD2B2B; font-weight: bold;";
+                return 'Error';
+            }
+        }]
+    },{
+        xtype: 'panel',
+        layout: 'fit',
+        region: 'center',
+        margins: '60 20 10 10',
+        items: {
+            xtype: 'chart',
+            store: 'TestResults',
+            animate: true,
+            axes: [{
+                type: 'Numeric',
+                position: 'left',
+                fields: ['duration'],
+                minimum: 0,
+                grid: true
+            }],
+            series: [{
+                type: 'column',
+                axis: 'left',
+                highlight: true,
+                xField: 'created_date',
+                yField: 'duration',
+                label: {
+                  display: 'insideEnd',
+                  'text-anchor': 'middle',
+                  field: 'duration',
+                  renderer: Ext.util.Format.numberRenderer('0'),
+                  orientation: 'vertical',
+                  color: '#333'
                 }
-            ],
-            tools:[
-                {
-                    type    : 'refresh',
-                    qtip    : 'Refresh'
-                }
-            ]
+            }]
         }
-    ]
+    },{
+        xtype: 'gridpanel',
+        itemId: 'results-details-grid',
+        region: 'south',
+        weight: 100,
+        flex: 1,
+        store: 'TestResults',
+        margins: '10 20 20 10',
+        columns: [{
+            xtype: 'datecolumn',
+            text: 'Start',
+            dataIndex: 'created_date',
+            align: 'center',
+            format: 'H:i:s.u',
+            width: 90
+        },{
+            xtype: 'datecolumn',
+            text: 'Finish',
+            dataIndex: 'finished_date',
+            align: 'center',
+            format: 'H:i:s.u',
+            width: 90
+        },{
+            text: 'Duration',
+            dataIndex: 'duration',
+            align: 'center',
+            width: 70,
+            renderer: function(v) {
+                return v + 's';
+            }
+        },{
+            text: 'Result',
+            dataIndex: 'result',
+            align: 'center',
+            width: 70,
+            renderer: function(v, meta) {
+                switch(v) {
+                    case Reporter.model.TestResult.PASSED:
+                        meta.style = "color: #62B851; font-weight: bold;";
+                        return 'Passed';
+                        
+                    case Reporter.model.TestResult.WARNING:
+                        meta.style = "color: #D6CF21; font-weight: bold;";
+                        return 'Warning';
+                }
+                
+                meta.style = "color: #DD2B2B; font-weight: bold;";
+                return 'Error';
+            }
+        }]        
+    }]
 });

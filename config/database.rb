@@ -1,5 +1,6 @@
 require  'data_mapper'
 require  'dm-migrations'
+require  'dm-serializer'
 
 # Setup DataMapper (http://datamapper.org/getting-started.html)
 DataMapper::Logger.new($stdout, :debug)
@@ -8,6 +9,7 @@ DataMapper::Model.raise_on_save_failure = true
 
 # Setup Models
 require './app/model/test_execution'
+require './app/model/test_result'
 
 DataMapper.finalize
 DataMapper.auto_upgrade!

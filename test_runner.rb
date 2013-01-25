@@ -1,42 +1,27 @@
 require 'json'
 require './config/setup'
-require './att_api_reporter'
 
 # open config
-$config = JSON.parse IO.read("conf/att-api.json")
+config = JSON.parse IO.read("./config/att-api.json")
 
 # execute tests
 begin
   while true
     puts "\n== Starting Test Execution ==\n"
     
-    # setup reporter
-    $reporter = AttApiReporter.new(
-      baseURL:      $config['apiHost'].to_s,
-      clientID:     $config['apiKey'].to_s,
-      clientSecret: $config['secretKey'].to_s,
-      shortCode:    $config['shortCode'].to_s,
-      oauth_token:  $config['oauth_token'],
-      userID:       $config['userID'].to_s,
-      password:     $config['password'].to_s,
-      tel:          $config['tel'].to_s,
-      localServer:  $config['localServer'].to_s + ':' + $config['port'].to_s
-    )
-
     # save test execution
     test_execution = TestExecution.create(
-      created_at: Time.now,
-      status: TestExecution::RUNNING
+      :created_at => Time.now,
+      :status => TestExecution::RUNNING
     )
-    test_execution.save
 
-    # run
-    $reporter.run
+    # init reporter
+    reporter = AttApiReporter.new(config, test_execution)
 
     # update test
     test_execution.update({
-      status: TestExecution::COMPLETED,
-      finished_at: Time.now
+      :status => TestExecution::COMPLETED,
+      :finished_at => Time.now
     })
     
     puts "\nFinishing Test Execution with Success"
@@ -50,9 +35,11 @@ rescue => e
   puts e.inspect
   puts e.backtrace
   
-  puts "\nFinishing Test Execution with Error"
-  test_execution.update({
-    status: TestExecution::ERROR,
-    finished_at: Time.now
-  })
+  unless test_execution.nil?
+    puts "\nFinishing Test Execution with Error"
+    test_execution.update({
+      :status => TestExecution::ERROR,
+      :finished_at => Time.now
+    }) 
+  end
 end

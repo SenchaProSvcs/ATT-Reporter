@@ -1,2 +1,5 @@
+require 'time'
 require './lib/mini_mime'
+require './lib/reporter/att_api_reporter'
+require './config/fix_ssl'
 require './config/database'
