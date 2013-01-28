@@ -62,6 +62,7 @@ GEM
     fastercsv (1.5.5)
     haml (3.1.7)
     httpauth (0.2.0)
+    i18n (0.6.1)
     json (1.7.6)
     json_pure (1.7.6)
     jwt (0.1.5)
@@ -112,6 +113,7 @@ DEPENDENCIES
   data_mapper
   dm-sqlite-adapter
   haml
+  i18n
   json
   logger
   mechanize
