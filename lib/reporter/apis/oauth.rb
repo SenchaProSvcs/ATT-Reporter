@@ -103,12 +103,6 @@ module AttApi::Oauth
     
     puts "    OAuth Token #{@oauth_token}"
     
-    # log oauth time time
-    @oauthCsv << Time.now.to_f 
-    CSV.open("logs/oauth.csv", "a") do |csv|
-      csv << @oauthCsv
-    end
-
     return TestResult::PASSED
 
   rescue Exception => e
