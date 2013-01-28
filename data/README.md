@@ -1,0 +1,1 @@
+DataMapper will automatically create the database, but the /data folder has to exist first.
