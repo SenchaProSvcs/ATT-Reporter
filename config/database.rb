@@ -3,7 +3,7 @@ require  'dm-migrations'
 require  'dm-serializer'
 
 # Setup DataMapper (http://datamapper.org/getting-started.html)
-DataMapper::Logger.new($stdout, :debug)
+DataMapper::Logger.new($stdout, :error)
 DataMapper.setup(:default, "sqlite://#{Dir.pwd}/data/database.db")
 DataMapper::Model.raise_on_save_failure = true
 

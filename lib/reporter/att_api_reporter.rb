@@ -209,14 +209,30 @@ class AttApiReporter
   end
 
   def log_error(msg)
+    log = ""
+    
     if msg.kind_of?(Exception)
-      puts msg.inspect
-      puts msg.page.body if defined?(msg.page) and not msg.page.nil?
-      puts msg.backtrace
-      msg = msg.inspect
+      log = log + msg.inspect + "\n"
+      
+      if defined?(msg.page) and not msg.page.nil?
+        
+        puts msg.page.inspect
+        
+        log = log + msg.page.body  + "\n"
+      end
+      
+      if defined?(msg.backtrace) and not msg.backtrace.nil?
+        log = log + msg.backtrace.join("\n") + "\n"
+      end
     else 
-      puts msg
+      log = msg
     end
+    
+    unless @current_test.nil?
+      @current_test.log = log
+    end
+    
+    puts log
   end
 
 end

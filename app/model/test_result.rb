@@ -15,6 +15,7 @@ class TestResult
   property :finished_date,String
   property :duration,     Float
   property :result,       Integer
+  property :log,          Text
   
   attr_accessor :api_id
   attr_accessor :url

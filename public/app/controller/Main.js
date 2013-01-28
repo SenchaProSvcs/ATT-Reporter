@@ -8,6 +8,10 @@ Ext.define('Reporter.controller.Main', {
             '#last-results-grid': {
                 render: me.onResultsGridRender,
                 selectionchange: me.onResultsGridSelectionChange
+            },
+            
+            '#results-details-grid': {
+                selectionchange: me.onResultsDetailsSelectionChange
             }
         });
     },
@@ -28,7 +32,7 @@ Ext.define('Reporter.controller.Main', {
         });
     },
     
-    onResultsGridSelectionChange: function(grid, selected) {
+    onResultsGridSelectionChange: function(selModel, selected) {
         var testResult = selected[0],
             testStore = Ext.getStore('TestResults');
         
@@ -40,5 +44,12 @@ Ext.define('Reporter.controller.Main', {
             method_id: testResult.get('method_id')
         };
         testStore.load();
+    },
+    
+    onResultsDetailsSelectionChange: function(selModel, selected) {
+        var testResult = selected[0],
+            logCt = selModel.view.ownerCt.nextSibling('#log-container');
+        
+        logCt.setValue(testResult ? testResult.get('log') : '');
     }
 });

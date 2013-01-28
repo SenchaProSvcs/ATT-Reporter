@@ -24,6 +24,9 @@ Ext.define('Reporter.model.TestResult', {
     }, {
         name: 'result',
         type: 'int'
+    }, {
+        name: 'log',
+        type: 'string'
     }],
     statics: {
       PASSED: 1,

@@ -25,6 +25,7 @@ Ext.define('Reporter.view.Viewport', {
         width: 500,
         margins: '0 10 20 20',
         store: 'LastTestResults',
+        split: true,
         features: [{
             ftype:'grouping',
              groupHeaderTpl: '{name}',
@@ -121,54 +122,75 @@ Ext.define('Reporter.view.Viewport', {
             }]
         }
     },{
-        xtype: 'gridpanel',
-        itemId: 'results-details-grid',
+        xtype: 'panel',
         region: 'south',
         weight: 100,
         flex: 1,
-        store: 'TestResults',
         margins: '10 20 20 10',
-        columns: [{
-            xtype: 'datecolumn',
-            text: 'Start',
-            dataIndex: 'created_date',
-            align: 'center',
-            format: 'H:i:s.u',
-            width: 90
-        },{
-            xtype: 'datecolumn',
-            text: 'Finish',
-            dataIndex: 'finished_date',
-            align: 'center',
-            format: 'H:i:s.u',
-            width: 90
-        },{
-            text: 'Duration',
-            dataIndex: 'duration',
-            align: 'center',
-            width: 70,
-            renderer: function(v) {
-                return v + 's';
-            }
-        },{
-            text: 'Result',
-            dataIndex: 'result',
-            align: 'center',
-            width: 70,
-            renderer: function(v, meta) {
-                switch(v) {
-                    case Reporter.model.TestResult.PASSED:
-                        meta.style = "color: #62B851; font-weight: bold;";
-                        return 'Passed';
-                        
-                    case Reporter.model.TestResult.WARNING:
-                        meta.style = "color: #D6CF21; font-weight: bold;";
-                        return 'Warning';
+        split: true,
+        layout: {
+            type: 'hbox',
+            align: 'stretch'
+        },
+        defaults: {
+            flex: 1
+        },
+        items: [{
+            xtype: 'gridpanel',
+            itemId: 'results-details-grid',
+            store: 'TestResults',
+            border: false,
+            columns: [{
+                xtype: 'datecolumn',
+                text: 'Start',
+                dataIndex: 'created_date',
+                align: 'center',
+                format: 'H:i:s.u',
+                width: 90
+            },{
+                xtype: 'datecolumn',
+                text: 'Finish',
+                dataIndex: 'finished_date',
+                align: 'center',
+                format: 'H:i:s.u',
+                width: 90
+            },{
+                text: 'Duration',
+                dataIndex: 'duration',
+                align: 'center',
+                width: 70,
+                renderer: function(v) {
+                    return v + 's';
                 }
+            },{
+                text: 'Result',
+                dataIndex: 'result',
+                align: 'center',
+                width: 70,
+                renderer: function(v, meta) {
+                    switch(v) {
+                        case Reporter.model.TestResult.PASSED:
+                            meta.style = "color: #62B851; font-weight: bold;";
+                            return 'Passed';
+                        
+                        case Reporter.model.TestResult.WARNING:
+                            meta.style = "color: #D6CF21; font-weight: bold;";
+                            return 'Warning';
+                    }
                 
-                meta.style = "color: #DD2B2B; font-weight: bold;";
-                return 'Error';
-            }
-        }]        
+                    meta.style = "color: #DD2B2B; font-weight: bold;";
+                    return 'Error';
+                }
+            }]     
+        },{
+            xtype: 'splitter',
+            flex: 0,
+            style: 'border: 1px solid #DDD; border-width: 0 1px;'
+        },{
+            xtype: 'textarea',
+            itemId: 'log-container',
+            fieldStyle: 'border: none;',
+            autoScroll: true
+        }]   
     }]
 });
