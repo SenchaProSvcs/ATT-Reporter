@@ -2,6 +2,10 @@ Ext.define('Reporter.view.Viewport', {
     renderTo: Ext.getBody(),
     extend: 'Ext.container.Viewport',
     requires: [
+        'Ext.chart.axis.Numeric',
+        'Ext.chart.Chart',
+        'Ext.chart.series.Column',
+        'Ext.form.field.TextArea',
         'Ext.grid.column.Date',
         'Ext.grid.feature.Grouping',
         'Ext.grid.Panel',
