@@ -101,7 +101,7 @@ class AttApiReporter
     end
     
     puts "Finished API Tests"
-    
+
   end
     
   def run_api_test(test_result)
@@ -194,6 +194,12 @@ class AttApiReporter
   end
   
   def handle_api_error(e)
+    
+    # if it was an interruption, re-raise
+    if e.kind_of?(SystemExit) or e.kind_of?(Interrupt)
+      raise e
+    end
+  
     if defined?(e.page) and defined?(e.page.response) and e.page.response['content-type'] == 'application/json'
       result = JSON.parse(e.page.body)
 

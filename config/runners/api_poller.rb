@@ -30,6 +30,15 @@ begin
     #wait 1 hour
     sleep 3600 
   end
+    
+rescue SystemExit, Interrupt
+  puts "Testing interrupted. Clearing up tests. INTERRUPTING THIS PROCESS MAY CORRUPT DATABASE DATA"
+
+  if test_execution
+    test_execution.results.destroy
+    test_execution.destroy  
+  end
+  
 rescue => e
   puts "\nLogging Error"
   puts e.inspect

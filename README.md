@@ -72,8 +72,9 @@ Go to the project directory
     
 This directory is actually a git project. So get the new code
 
+    $ git reset --hard
     $ git pull
     
 And after that, replace the development javascript by production JavaScript:
 
-    $ cp -rf public/build/Reporter/production *.* public/
+    $ cp -rf public/build/Reporter/production/*.* public/
