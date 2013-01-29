@@ -4,3 +4,4 @@ logs/
 results/
 nohup.out
 data/database.db
+*.pid
