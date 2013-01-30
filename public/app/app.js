@@ -5,7 +5,6 @@ Ext.application({
     ],
     stores: [
         'LastTestResults',
-        'TestExecutions',
         'TestResults'
     ],
     views: [

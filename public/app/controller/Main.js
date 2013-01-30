@@ -12,6 +12,10 @@ Ext.define('Reporter.controller.Main', {
             
             '#results-details-grid': {
                 selectionchange: me.onResultsDetailsSelectionChange
+            },
+            
+            '#refresh-btn': {
+                click: me.onRefreshBtnClick
             }
         });
     },
@@ -21,7 +25,7 @@ Ext.define('Reporter.controller.Main', {
             var firstResult = results[0];
 
             if (firstResult) {
-                var executionDate = firstResult.raw.test_execution_created_at;
+                var executionDate = firstResult.raw.test_execution_created_date;
                 
                 if (executionDate) {
                     grid.down('#api-status-header').update({
@@ -51,5 +55,15 @@ Ext.define('Reporter.controller.Main', {
             logCt = selModel.view.ownerCt.nextSibling('#log-container');
         
         logCt.setValue(testResult ? testResult.get('log') : '');
+    },
+    
+    onRefreshBtnClick: function(btn) {
+        var testResults = Ext.getStore('TestResults');
+        
+        Ext.getStore('LastTestResults').reload();
+        
+        if (testResults.getProxy().extraParams.method_id) {
+            testResults.reload();
+        }
     }
 });

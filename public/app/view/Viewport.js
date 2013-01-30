@@ -37,15 +37,27 @@ Ext.define('Reporter.view.Viewport', {
              collapsible: false
         }],
         dockedItems: [{
-            xtype: 'component',
+            xtype: 'container',
             dock: 'top',
-            cls: 'api-status-header',
-            itemId: 'api-status-header',
-            tpl: '<h2>APIs Status</h2><span>Last Update: {lastUpdate:date("n/j/Y H:iA")}</span>',
             height: 60,
-            data: {
-                lastUpdate: null
-            }
+            layout: {
+                type: 'hbox',
+                align: 'middle'
+            },
+            items: [{
+                xtype: 'component',
+                cls: 'api-status-header',
+                itemId: 'api-status-header',
+                tpl: '<h2>APIs Status</h2><span>Last Update: {lastUpdate:date("n/j/Y H:iA")}</span>',
+                flex: 1,
+                data: {
+                    lastUpdate: null
+                }
+            },{
+                xtype: 'button',
+                iconCls: 'x-tbar-loading',
+                itemId: 'refresh-btn'
+            }]
         }],
         columns: [{
             text: 'Method',
