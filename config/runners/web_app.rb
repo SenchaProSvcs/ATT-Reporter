@@ -24,7 +24,6 @@ get '/' do
 end
 
 get '/test_executions' do
-  sleep 1
   result = TestExecution.all(:order => [:created_date.desc])
   
   content_type :json
@@ -32,7 +31,6 @@ get '/test_executions' do
 end
 
 get '/last_test_results' do
-  sleep 1
   test_execution = TestExecution.last
   results = []
   

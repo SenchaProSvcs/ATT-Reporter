@@ -38,45 +38,20 @@ class AttApiReporter
   attr_reader :config
   attr_reader :current_test
   attr_reader :oauth_token
+  attr_reader :last_request
   
   def initialize(config, test_execution)
     @config = config
     @oauth_token = config['oauth_token']
-    # 
-    # 
-    # 
-    # 
-    #   baseURL:      $config['api_host'].to_s,
-    #   clientID:     $config['api_key'].to_s,
-    #   clientSecret: $config['secret_key'].to_s,
-    #   short_code:    $config['short_code'].to_s,
-    #   oauth_token:  $config['oauth_token'],
-    #   user_id:       $config['user_id'].to_s,
-    #   password:     $config['password'].to_s,
-    #   tel:          $config['tel'].to_s,
-    #   local_server:  $config['local_server'].to_s + ':' + $config['port'].to_s
-    # )
-    # 
-    # 
-    # @config['tel'] = conf[:tel]
-    # 
-    # @testNames = ['oauth_login', 'oauth_gettoken']
-    # @testResults = {}
-    # @authorize_failed = false
-    # 
-    # @testName = "*****"
-    # 
-    # raise "No baseURL specified" unless @config['api_host'] = conf[:baseURL]
-    # raise "No clientID specified" unless @config['api_key'] = conf[:clientID]
-    # raise "No clientSecret specified" unless @config['secret_key'] = conf[:clientSecret]
-    #
-    # create agent
+    
+    # create Mechanize agent
     @agent = Mechanize.new
     @agent.read_timeout = 300
     @agent.open_timeout = 300
     # @agent.log = Logger.new(STDOUT)
-    # 
-    # parse API definition
+    @agent.pre_connect_hooks << lambda {|agent, request| 
+      @last_request = request
+    }
     
     # Execute tests for each API method
     config['apis'].each do |api|
@@ -114,16 +89,26 @@ class AttApiReporter
     if not current_test or current_test.api_id != test_result.api_id
       puts "\n  API #{test_result.api_name}"
     end
+    
     @current_test = test_result
+    @last_request = nil
     method_signature = "run_#{test_result.method_id}"
-
-    # if there's a method to run the API
-    if self.respond_to? method_signature
-      result = self.send(method_signature, test_result)
+    
+    begin
+      # if there's a method to run the API
+      if self.respond_to? method_signature
+        result = self.send(method_signature, test_result)
+    
+      # otherwise use the generic one
+      else
+        result = generic_api_test test_result
+      end
       
-    # otherwise use the generic one
-    else
-      result = generic_api_test test_result
+      test_result.log = get_request_log(@agent.page)
+      
+    rescue Exception => e
+      result = handle_api_error(e)
+      test_result.log = get_error_log(e)
     end
 
     if result == TestResult::PASSED
@@ -159,18 +144,14 @@ class AttApiReporter
     else
       page = @agent.get(test_result.url, test_result.data, nil, test_result.headers)
     end
-  
+    
     # Green
     if (200..299) === page.code.to_i
       return TestResult::PASSED 
     end
     
     # Red
-    log_error page.body
     return TestResult::ERROR
-  
-  rescue Exception => e
-    return handle_api_error(e)
   end  
   
   def parse_method_values(value)
@@ -204,41 +185,56 @@ class AttApiReporter
       result = JSON.parse(e.page.body)
 
       if result and (result['RequestError'] or result['requestError'])
-        log_error e
         return TestResult::WARNING
       end
     end
     
     # Red
-    log_error e
     return TestResult::ERROR
   end
+  
+  def get_request_log(page)
+    log = ""
+    if not page.nil?
+      if not @last_request.nil?
+        log = log + "Request Info\n"
+        log = log + "Method:\n" + @last_request.method + "\n\n"
+        log = log + "Headers:\n"
+        @last_request.each {|k,v|
+          log = log + "#{k} = #{v}\n"
+        }
+        log = log + "\n\n"
+        log = log + "Body:\n" + @last_request.body.to_s  + "\n\n"
+      end
+      
+      log = log + "Response Info\n"
+      log = log + "URI:\n" + page.uri.to_s + "\n\n"
+      log = log + "Code:\n" + page.code.to_s + "\n\n"
+      log = log + "Body:\n" + page.body.to_s  + "\n\n"
+    end
+    
+    log
+  end
 
-  def log_error(msg)
+  def get_error_log(msg)
     log = ""
     
     if msg.kind_of?(Exception)
-      log = log + msg.inspect + "\n"
+      log = log + "Error Message:\n" + msg.inspect + "\n\n"
       
-      if defined?(msg.page) and not msg.page.nil?
-        
-        puts msg.page.inspect
-        
-        log = log + msg.page.body  + "\n"
+      if defined?(msg.page)
+        log = log + get_request_log(msg.page)
       end
       
       if defined?(msg.backtrace) and not msg.backtrace.nil?
-        log = log + msg.backtrace.join("\n") + "\n"
+        log = log + "Backtrace:\n" + msg.backtrace.join("\n") + "\n"
       end
     else 
       log = msg
     end
     
-    unless @current_test.nil?
-      @current_test.log = log
-    end
-    
     puts log
+    log
   end
 
 end

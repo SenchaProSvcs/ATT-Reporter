@@ -66,7 +66,7 @@ module AttApi::Oauth
   
   rescue Exception => e
     @authorize_failed = true
-    return handle_api_error(e)
+    raise e
   end
   
   ###
@@ -107,7 +107,7 @@ module AttApi::Oauth
 
   rescue Exception => e
     @authorize_failed = true
-    return handle_api_error(e)
+    raise e
   end
 
 end

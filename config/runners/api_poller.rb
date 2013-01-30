@@ -23,6 +23,7 @@ begin
       :status => TestExecution::COMPLETED,
       :finished_at => Time.now
     })
+    test_execution = nil
     
     puts "\nFinishing Test Execution with Success"
     puts "Next test will run in 1 hour..."
