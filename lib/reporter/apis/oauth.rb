@@ -13,7 +13,7 @@ module AttApi::Oauth
     @oauthCsv = [Time.now.to_f] #start_time
     
     # connect to oauth
-    page = @agent.get "#{@config['api_host']}/oauth/authorize?scope=TL,DC,WAP,SMS,MMS,PAYMENT&client_id=#{@config['api_key']}&redirect_uri=#{@config['local_server']}:#{@config['port']}/auth/callback"
+    page = @agent.get "#{@config['api_host']}/oauth/authorize?scope=TL,DC,WAP,SMS,MMS,PAYMENT,SPEECH&client_id=#{@config['api_key']}&redirect_uri=#{@config['local_server']}:#{@config['port']}/auth/callback"
 
     if page.code != "200"
       raise "Error connecting to authentication website"

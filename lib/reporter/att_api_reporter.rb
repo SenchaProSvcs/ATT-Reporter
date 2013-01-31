@@ -110,7 +110,7 @@ class AttApiReporter
       result = handle_api_error(e)
       test_result.log = get_error_log(e)
     end
-
+    
     if result == TestResult::PASSED
       puts "\n    - [PASSED] #{test_result['name']}"
     elsif result == TestResult::WARNING
@@ -172,6 +172,9 @@ class AttApiReporter
     end
     
     return value
+  
+  rescue ArgumentError
+    return value
   end
   
   def handle_api_error(e)
@@ -204,7 +207,14 @@ class AttApiReporter
           log = log + "#{k} = #{v}\n"
         }
         log = log + "\n\n"
-        log = log + "Body:\n" + @last_request.body.to_s  + "\n\n"
+        
+        # check if body has non utf-8 chars
+        begin
+          @last_request.body.to_s.gsub('a','a')
+          log = log + "Body:\n" + @last_request.body.to_s  + "\n\n"
+        rescue ArgumentError
+          log = log + "Body:\n <file content>" + "\n\n"
+        end
       end
       
       log = log + "Response Info\n"

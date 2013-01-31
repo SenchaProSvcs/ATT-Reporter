@@ -62,19 +62,23 @@ Before start please be advised that the deployment process is pretty manual. You
     
 After connection stop the processes
 
-
-    sudo /etc/init.d/att_poller_runner stop
-    sudo /etc/init.d/att_web_app_runner stop
+    $ sudo /etc/init.d/att_poller_runner stop
+    $ sudo /etc/init.d/att_webapp_runner stop
 
 Go to the project directory
 
-    $ cd ATT-Poller
+    $ cd ~/ATT-Reporter
     
 This directory is actually a git project. So get the new code
 
     $ git reset --hard
-    $ git pull
+    $ git pull #will ask for your github auth
     
 And after that, replace the development javascript by production JavaScript:
 
     $ cp -rf public/build/Reporter/production/*.* public/
+    
+Restart processes
+
+    $ sudo /etc/init.d/att_poller_runner start
+    $ sudo /etc/init.d/att_webapp_runner start   

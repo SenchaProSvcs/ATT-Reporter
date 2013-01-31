@@ -1,96 +1,41 @@
 module AttApi::SMS
-
-  private
-
-  ###
-  # SMS Send
-  # DOCS: Requires that Accept-Encoding is set, should be just Accept
-  ##
-  def api_v2sms_send_form
-    log "Sending SMS to #{@config['tel']}"
-    data =  { :Address => "tel:#{@config['tel']}", :Message => 'Works from SENCHA 2'};
-    url = "#{@config['api_host']}/rest/sms/2/messaging/outbox?access_token=#{@oauth_token}"
-    log_error "Sending SMS to #{data}"
-    log_error url
-    response = simple_form_post(url, data)
-    log_error "response #{response}"
-    log "Sent SMS"
+  
+  def run_sms_messaging_outbox(test_result)
+    test_result.url     = "https://api.att.com/rest/sms/2/messaging/outbox"
+    test_result.verb    = "POST"
+    test_result.data    = {
+        "Address" => "tel:{telephone}",
+        "Message" => "Test ATT API"
+    }
+    test_result.headers = {
+      "Accept" =>         "application/json",
+      "Authorization" =>  "{auth_token}",
+      "Content-Type" =>   "application/json"
+    }
     
-    if(!response)
-      return "FAILED"
-    end
+    result = generic_api_test test_result
+    data = JSON.parse(@agent.page.body)
     
-    @sms_status_url = response['ResourceReference']['resourceURL']
-    @sms_id = response['Id']
-    return "OK"
+    # save document for other tests
+    @sms_id = data['Id']
+    
+    return result
   end
-
-  def api_v2sms_send_json
+  
+  def run_sms_get_status(test_result)
     
-    data = "{'Address' => 'tel:#{@config['tel']}', 'Message' => 'Works from SENCHA api v2'}";
-    url = "#{@config['api_host']}/rest/sms/2/messaging/outbox?access_token=#{@oauth_token}"
-    log_error "Sending SMS to #{data}"
-    log_error url
-    response = simple_json_post(url, data)
-    log "Sent SMS"
-    pp response
+    if @sms_id.nil?
+      raise 'Send SMS API must run before'
+    end
     
-    log_error "response #{response}"
+    test_result.url     = "https://api.att.com/rest/sms/2/messaging/outbox/#{@sms_id}"
+    test_result.verb    = "GET"
+    test_result.headers = {
+      "Accept"            => "application/json",
+      "Authorization"     => "{auth_token}"
+    }
     
-    if(!response)
-      return "FAILED"
-    end
-        
-        
-    @sms_status_url = response['ResourceReference']['resourceURL']
-    @sms_id = response['Id']
-    return "OK"
-  end
-
-
-  ###
-  # SMS Status
-  ##
-  def api_v2sms_status
-#
-
-
-    url = "#{@config['api_host']}/rest/sms/2/messaging/outbox/#{@sms_id}?access_token=#{@oauth_token}"
-     log_error "Request: #{url}"
-
-    begin
-      log "Getting SMS Status for #{@sms_id}"
-      page = @agent.get(url)
-      log "Sent status request"
-      log_error JSON.pretty_generate(JSON.parse(page.body))
-    rescue Exception => e
-      log_error e.backtrace
-      log_error e.page.body
-       return "FAILED"
-    end
-    return "OK"
-  end
-
-  ###
-  # SMS Receive
-  ##
-  def api_v2sms_receive
-
-    url = "#{@config['api_host']}/2/messages/inbox/sms?access_token=#{@oauth_token}&registrationID=#{@config['short_code']}&format=json"
-
-    log "Requesting SMS inbox..."
-    log_error "Request:  #{url} ..." if @debug >= AttApiReporter::DEBUG_INFO
-    begin
-      page = @agent.get(url)
-      log "Sent SMS"
-      puts "OK"
-      log_error JSON.pretty_generate(JSON.parse(page.body))
-    rescue Exception => e
-      log_error e.backtrace
-      log_error e.page.body
-       return "FAILED"
-    end
-    return "OK"
+    generic_api_test test_result
   end
 
 end

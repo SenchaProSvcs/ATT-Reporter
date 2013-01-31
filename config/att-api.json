@@ -5,14 +5,19 @@
     "api_host"          : "https://api.att.com",
     "local_server"      : "http://127.0.0.1",
     "port"              : "5985",
+
+    
     "user_id"           : "jaisonw@isoftstone.com",
     "password"          : "welcome1",
     "tel"               : "4259193428",
-    /*"tel"             : "6504211718",*/
-    /*"oauth_token"     : "8d1f6fb9240cbb8ad9edc745bf78b95c",*/
+    
+    /*
+    "user_id"           : "mdennon@gmail.com",
+    "password"          : "test123",
+    "tel"               : "6504921180",
+    "oauth_token": "bb2af5fd4f12cbddb16e1d74fd50dfe4",*/
     
     "apis": [
-    
         {
             "id"        : "oauth",
             "name"      : "OAuth",
@@ -24,13 +29,16 @@
                 "name"  : "Get Access Token"
             }]
         },
-        
+     
         {
             "id"        : "mms",
             "name"      : "MMS",
             "methods"   : [{
                 "id"    : "messaging_outbox",
                 "name"  : "Send MMS"
+            },{
+                "id"    : "get_status",
+                "name"  : "Get Status"
             }]
         },
 
@@ -54,7 +62,7 @@
                 "name"      : "New Subscription (Before Consent)"
             }]
         },
-        
+
         {
             "id"        : "location",
             "name"      : "Location",
@@ -70,26 +78,35 @@
                 }
             }]
         },
-        
+
         {
             "id"        : "sms",
             "name"      : "SMS",
             "methods"   : [{
-                "id"            : "messaging_outbox",
-                "name"          : "Send SMS",
-                "url"           : "https://api.att.com/rest/sms/2/messaging/outbox",
-    	        "verb"          : "POST",
-                "headers"       : {
-                    "Accept"            : "application/json",
-                    "Authorization"     : "{auth_token}",
-                    "Content-Type"      : "application/json"
-                },
-                "data"          : {
-                    "Address"   : "tel:{telephone}",
-                    "Message"   : "Test ATT API"
-                }
+                "id"    : "messaging_outbox",
+                "name"  : "Send MMS"
+            },{
+                "id"    : "get_status",
+                "name"  : "Get Status"
+            }]
+        },
+        
+        {
+            "id"        : "speech",
+            "name"      : "Speech",
+            "methods"   : [{
+                "id"    : "to_text",
+                "name"  : "To Text"
+            }]
+        },
+        
+        {
+            "id"        : "wap",
+            "name"      : "WAP",
+            "methods"   : [{
+                "id"    : "send_push",
+                "name"  : "Send Push"
             }]
         }
-        
     ]
 }

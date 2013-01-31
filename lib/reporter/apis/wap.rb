@@ -3,19 +3,9 @@
 ##
 module AttApi::Wap
 
-  private
-
-  def api_wap_push
-
-    url = "#{@config['api_host']}/1/messages/outbox/wapPush?access_token=#{@oauth_token}"
-    log "Sending WAP push"
-    log_error "Request: : #{url}" if @debug >= AttApiReporter::DEBUG_INFO
-
-    begin
-      
-      mimeContent = MiniMime.new
-      
-      mimeContent.add_content(
+  def run_wap_send_push(test_result)
+      mime_content = MiniMime.new
+      mime_content.add_content(
         :type => 'text/xml',
         :content => 
           '<wapPushRequest>' + "\n" +
@@ -26,8 +16,7 @@ module AttApi::Wap
           '  <priority>High</priority>' + "\n" +
           '</wapPushRequest>'
       )
-      
-      mimeContent.add_content(
+      mime_content.add_content(
         :type => 'text/xml',
         :content =>
           'Content-Disposition: form-data; name="PushContent"' +  "\n" +
@@ -43,61 +32,19 @@ module AttApi::Wap
           '   </indication>' +  "\n" +
           '</si>'
       )
-
-      page = @agent.post(url, mimeContent.content, {
-        'Accept' => 'application/json',
-        'Content-Type' => mimeContent.header
-      })
-      response = JSON.parse(page.body)
-      log_error JSON.pretty_generate(response) #if @debug >= AttApiReporter::DEBUG_INFO
-      log "Sent WAP"
-
-    rescue Exception => e
-      log_error e.backtrace
-      log_error e.page.body
-      return "FAILED"
-    end
-  return "OK"
+      
+      test_result         ||= TestResult.new
+      test_result.url     = "https://api.att.com/1/messages/outbox/wapPush"
+      test_result.verb    = "POST"
+      test_result.data    = mime_content.content
+      test_result.headers = {
+        "Accept"        => "application/json",
+        "Authorization" => "{auth_token}",
+        "Content-Type"  => mime_content.header,
+        "Address" => "tel:{telephone}",
+      }
+      
+      generic_api_test test_result
   end
 
 end
-
-
-
-
-
-
-#       mime_split = "----=_Part_0_#{((rand*10000000) + 10000000).to_i}.#{((Time.new.to_f) * 1000).to_i}"
-#       
-#       content = []
-#       content << 'Content-Type: text/xml
-# Content-ID: <rootpart@soapui.org>
-# 
-# <wapPushRequest>
-#   <addresses>
-#      <address>tel:'+@config['tel']+'</address>
-#   </addresses>
-#   <subject>WAP</subject>
-#   <priority>High</priority>
-# </wapPushRequest>
-# '
-#       content << 'Content-Type: text/plain
-# Content-ID: <wapmessage.xml>
-# 
-# Content-Disposition: form-data; name="PushContent"
-# Content-Type: text/vnd.wap.si
-# Content-Length: 12
-# X-Wap-Application-Id: x-wap-application:wml.ua
-# 
-# <?xml version ="1.0"?>
-# <!DOCTYPE si PUBLIC "-//WAPFORUM//DTD SI 1.0//EN" "">http://www.wapforum.org/DTD/si.dtd">
-# <si>
-#    <indication href="http://wap.uni-wise.com/hswap/zh_1/index.jsp?MF=N&Dir=23724" si-id="1">
-#      CDMA Push test!!
-#    </indication>
-# </si>
-# '
-#       page = @agent.post(url, "--#{mime_split}\n" + content.join("--#{mime_split}\n") + "--#{mime_split}--\n", {
-#         'Accept' => 'application/json',
-#         'Content-Type' => 'multipart/related; type="text/xml"; start="<rootpart@soapui.org>"; boundary="' + mime_split + '"'
-#       })

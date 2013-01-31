@@ -10,37 +10,26 @@
 ##
 module AttApi::Speech
   
-  # TODO: Pre-proc and post-proc URLs
-  
-  private
+  def run_speech_to_text(test_result)
+    file_contents = File.open(File.join(File.dirname(__FILE__), '..', 'speech', 'voicemail.amr')){ |f| f.read }
 
-  def api_voicemail_speech_to_text
-
-    mimeContent = MiniMime.new
-
-    mimeContent.add_content(
-      :type => 'audio/amr',
-      :headers => {
-         'Content-Transfer-Encoding' => 'base64',
-         'Content-Disposition' => 'attachment; name="voicemail.amr"'
-      },
-      :content_id => '<voicemail.amr>',
-      :content => Base64.encode64(File.read('lib/voicemail.amr'))
-    )
-
-    puts "Sending Voicemail Text to Speech request"
-    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/voicemail/speechtotext?access_token=#{@oauth_token}", mimeContent.content, 'Content-Type' => mimeContent.header)
-    if(!response) 
-      return "FAILED"
-    end
-    return "OK"
+    test_result.url     = "https://api.att.com/rest/2/SpeechToText"
+    test_result.verb    = "POST"
+    test_result.data    = file_contents
+    test_result.headers = {
+      "Accept"            => "application/json",
+      "Authorization"     => "{auth_token}",
+      "Content-Type"      => "audio/amr"
+    }
+    
+    return generic_api_test test_result
   end
   
   def api_websearch_speech_to_text
 
-    mimeContent = MiniMime.new
+    mime_content = MiniMime.new
 
-    mimeContent.add_content(
+    mime_content.add_content(
       :type => 'audio/amr',
       :headers => {
          'Content-Transfer-Encoding' => 'base64',
@@ -51,7 +40,7 @@ module AttApi::Speech
     )
 
     puts "Sending Web search Text to Speech request"
-    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/websearch/speechtotext?access_token=#{@oauth_token}", mimeContent.content, 'Content-Type' => mimeContent.header)
+    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/websearch/speechtotext?access_token=#{@oauth_token}", mime_content.content, 'Content-Type' => mime_content.header)
     if(!response) 
       return "FAILED"
     end
@@ -60,9 +49,9 @@ module AttApi::Speech
   
   def api_localbusinesssearch_speech_to_text
 
-    mimeContent = MiniMime.new
+    mime_content = MiniMime.new
 
-    mimeContent.add_content(
+    mime_content.add_content(
       :type => 'audio/amr',
       :headers => {
          'Content-Transfer-Encoding' => 'base64',
@@ -73,7 +62,7 @@ module AttApi::Speech
     )
 
     puts "Sending Local Business Search Text to Speech request"
-    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/localbusinesssearch/speechtotext?access_token=#{@oauth_token}", mimeContent.content, 'Content-Type' => mimeContent.header)
+    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/localbusinesssearch/speechtotext?access_token=#{@oauth_token}", mime_content.content, 'Content-Type' => mime_content.header)
     if(!response) 
       return "FAILED"
     end
@@ -83,9 +72,9 @@ module AttApi::Speech
   
   def api_questionandanswer_speech_to_text
 
-    mimeContent = MiniMime.new
+    mime_content = MiniMime.new
 
-    mimeContent.add_content(
+    mime_content.add_content(
       :type => 'audio/amr',
       :headers => {
          'Content-Transfer-Encoding' => 'base64',
@@ -96,7 +85,7 @@ module AttApi::Speech
     )
 
     puts "Sending Question and Answer Text to Speech request"
-    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/questionandanswer/speechtotext?access_token=#{@oauth_token}", mimeContent.content, 'Content-Type' => mimeContent.header)
+    response = simple_json_post("#{@config['api_host']}/1/speechtranslation/questionandanswer/speechtotext?access_token=#{@oauth_token}", mime_content.content, 'Content-Type' => mime_content.header)
     if(!response) 
       return "FAILED"
     end
