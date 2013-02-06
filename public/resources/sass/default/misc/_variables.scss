@@ -5,3 +5,11 @@ $supports-border-radius: true;
 $supports-gradients: true;
 $font-size: 12px;
 $font-family: Geneva, "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+
+// Grid
+// --------------
+$grid-row-cell-alt-background: #E2E2E2;
+
+$grid-row-cell-selected-background-color: #BDDFFF;
+$grid-row-cell-selected-border-color: darken(#BDDFFF, 5%);
+$grid-row-cell-selected-color: color-by-background(#BDDFFF, 80%);

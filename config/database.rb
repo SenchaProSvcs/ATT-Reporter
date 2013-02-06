@@ -1,6 +1,7 @@
 require  'data_mapper'
 require  'dm-migrations'
 require  'dm-serializer'
+require  'dm-pager'
 
 # Setup DataMapper (http://datamapper.org/getting-started.html)
 DataMapper::Logger.new($stdout, :error)

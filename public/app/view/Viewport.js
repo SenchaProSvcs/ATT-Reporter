@@ -30,6 +30,9 @@ Ext.define('Reporter.view.Viewport', {
         margins: '0 10 20 20',
         store: 'LastTestResults',
         split: true,
+        viewConfig: {
+            stripeRows: true
+        },
         features: [{
             ftype:'grouping',
              groupHeaderTpl: '{name}',
@@ -134,6 +137,12 @@ Ext.define('Reporter.view.Viewport', {
                   renderer: Ext.util.Format.numberRenderer('0'),
                   orientation: 'vertical',
                   color: '#333'
+                },
+                listeners: {
+                    itemmouseup: function(item) {
+                        var grid = this.chart.up('viewport').down('#results-details-grid');
+                        grid.getSelectionModel().select(item.storeItem);
+                    }
                 }
             }]
         }
@@ -156,13 +165,16 @@ Ext.define('Reporter.view.Viewport', {
             itemId: 'results-details-grid',
             store: 'TestResults',
             border: false,
+            viewConfig: {
+                stripeRows: true
+            },
             columns: [{
                 xtype: 'datecolumn',
                 text: 'Start',
                 dataIndex: 'created_date',
                 align: 'center',
-                format: 'H:i:s.u',
-                width: 90
+                format: 'n/j H:i:s.u',
+                width: 130
             },{
                 xtype: 'datecolumn',
                 text: 'Finish',

@@ -47,6 +47,18 @@ get '/last_test_results' do
 end
 
 get '/api_method_details' do
-  test_results = TestResult.all(:method_id => params[:method_id])
+  page = (params[:page]||1).to_i
+  per_page = (params[:limit]||100).to_i
+  order = (params[:sort]||:created_date).to_sym
+  dir = (params[:dir]||"ASC").to_s
+  
+  puts "page=#{page}"
+  puts "per_page=#{per_page}"
+  
+  test_results = TestResult.all({
+    :method_id => params[:method_id]
+  }).page(page, :per_page => per_page, :order => [dir == "ASC" ? order.asc : order.desc])
+
+  content_type :json
   test_results.to_json
 end

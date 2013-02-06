@@ -8,9 +8,15 @@ Ext.define('Reporter.store.LastTestResults',{
     groupers: [{
         property: 'api_name'
     }],
+    remoteSort: false,
+    sorters: {
+        property: 'created_date',
+        direction: 'ASC'
+    },
     proxy: {
         type: 'ajax',
         url: '/last_test_results',
+        simpleSortMode: true,
         reader: {
             type: 'json'
         }

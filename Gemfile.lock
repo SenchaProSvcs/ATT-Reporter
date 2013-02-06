@@ -31,6 +31,9 @@ GEM
       dm-core (~> 1.2.0)
     dm-migrations (1.2.0)
       dm-core (~> 1.2.0)
+    dm-pager (1.1.0)
+      dm-aggregates (>= 0.10.1)
+      dm-core (>= 0.10.1)
     dm-serializer (1.2.2)
       dm-core (~> 1.2.0)
       fastercsv (~> 1.5)
@@ -113,6 +116,7 @@ DEPENDENCIES
   curb
   daemons
   data_mapper
+  dm-pager
   dm-sqlite-adapter
   haml
   i18n

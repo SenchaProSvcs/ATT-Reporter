@@ -1,6 +1,11 @@
 Ext.define('Reporter.controller.Main', {
     extend: 'Ext.app.Controller',
     
+    refs: [{
+        ref: 'chart',
+        selector: 'chart'
+    }],
+    
     init: function() {
         var me = this;
         
@@ -47,7 +52,7 @@ Ext.define('Reporter.controller.Main', {
         testStore.getProxy().extraParams = {
             method_id: testResult.get('method_id')
         };
-        testStore.load();
+        testStore.loadPage(1);
     },
     
     onResultsDetailsSelectionChange: function(selModel, selected) {
@@ -55,6 +60,7 @@ Ext.define('Reporter.controller.Main', {
             logCt = selModel.view.ownerCt.nextSibling('#log-container');
         
         logCt.setValue(testResult ? testResult.get('log') : '');
+        this.highlightResult(testResult);
     },
     
     onRefreshBtnClick: function(btn) {
@@ -63,7 +69,29 @@ Ext.define('Reporter.controller.Main', {
         Ext.getStore('LastTestResults').reload();
         
         if (testResults.getProxy().extraParams.method_id) {
-            testResults.reload();
+            testResults.loadPage(1);
         }
+    },
+    
+    highlightResult: function(testResult) {
+
+        if (!testResult) {
+            return;
+        }
+        
+        var id = testResult.getId(),
+            series = this.getChart().series.get(0),
+            i, items, l;
+
+        series.highlight = true;
+        series.unHighlightItem();
+        series.cleanHighlights();
+        for (i = 0, items = series.items, l = items.length; i < l; i++) {
+            if (id == items[i].storeItem.getId()) {
+                series.highlightItem(items[i]);
+                break;
+            }
+        }
+        series.highlight = false;
     }
 });
